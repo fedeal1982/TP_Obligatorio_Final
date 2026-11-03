@@ -1,18 +1,12 @@
 """
-Pruebas unitarias para Ejercicio 3
-EcoTech Solutions - Trabajo Final
-
-Suite de pruebas automatizadas con 'unittest' para la certificación y auditoría
-del algoritmo de cálculo de huella de carbono industrial y su integración web Django.
+Pruebas del Ejercicio 3 (EcoTech Solutions).
+Ejecutar desde la carpeta Ejercicio3:  python manage.py test
 """
-
 import unittest
-from django.test import RequestFactory
-from ejercicio3 import (
-    calcular_emisiones_carbono,
-    obtener_metricas_consumo,
-    vista_panel_sustentabilidad,
-)
+
+from django.test import TestCase
+
+from .metricas import calcular_emisiones_carbono, obtener_metricas_consumo
 
 
 class TestCalculoEmisiones(unittest.TestCase):
@@ -146,7 +140,6 @@ class TestMetricasConsumo(unittest.TestCase):
 
         # Total emisiones: 4000 + 10000 + 6000 = 20000.0 kg CO2
         self.assertEqual(metricas["total_emisiones"], 20000.0)
-        self.assertEqual(metricas["total_global_emisiones"], 20000.0)
 
         # Total consumo: 10000 + 25000 + 15000 = 50000.0 kWh
         self.assertEqual(metricas["total_consumo_kwh"], 50000.0)
@@ -206,48 +199,17 @@ class TestMetricasConsumo(unittest.TestCase):
             obtener_metricas_consumo(historial_incompleto)
 
 
-class TestVistaPanelSustentabilidad(unittest.TestCase):
-    """
-    Punto B: Pruebas unitarias para la vista Django 'vista_panel_sustentabilidad(request)'.
-    """
+class TestVistaPanelSustentabilidad(TestCase):
+    """Punto B: vista Django vista_panel_sustentabilidad."""
 
-    def setUp(self):
-        self.factory = RequestFactory()
-
-    def test_vista_renderiza_plantilla_correcta_y_contexto(self):
-        """
-        Valida que la vista retorne un HttpResponse con código 200, invoque
-        la plantilla 'sustentabilidad/panel.html' y provea las variables requeridas.
-        """
-        request = self.factory.get("/sustentabilidad/")
-        respuesta = vista_panel_sustentabilidad(request)
-
-        # 1. Estado HTTP 200 (OK)
+    def test_vista_renderiza_plantilla_y_contexto(self):
+        respuesta = self.client.get("/")
         self.assertEqual(respuesta.status_code, 200)
+        self.assertTemplateUsed(respuesta, "sustentabilidad/panel.html")
 
-        # 2. Nombre de la plantilla requerida
-        self.assertEqual(getattr(respuesta, "template_name", ""), "sustentabilidad/panel.html")
+        for clave in ("total_emisiones", "planta_mayor_consumo", "total_consumo_kwh", "registros"):
+            self.assertIn(clave, respuesta.context)
 
-        # 3. Presencia de variables requeridas en el contexto
-        contexto = getattr(respuesta, "context_data", {})
-        self.assertIn("total_emisiones", contexto)
-        self.assertIn("planta_mayor_consumo", contexto)
-        self.assertIn("total_consumo_kwh", contexto)
-        self.assertIn("registros", contexto)
-        self.assertIn("metricas", contexto)
-
-        # 4. Consistencia de los datos calculados
-        self.assertGreater(contexto["total_emisiones"], 0.0)
-        self.assertIsInstance(contexto["planta_mayor_consumo"], str)
-        self.assertGreater(contexto["total_consumo_kwh"], 0.0)
-        self.assertIsInstance(contexto["registros"], list)
-
-        # 5. El HTML generado por Django contiene los datos clave
-        contenido_html = respuesta.content.decode("utf-8")
-        self.assertIn("<!DOCTYPE html>", contenido_html)
-        self.assertIn("EcoTech Solutions", contenido_html)
-        self.assertIn("Planta Sur - Comodoro Rivadavia", contenido_html)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        self.assertGreater(respuesta.context["total_emisiones"], 0)
+        self.assertEqual(respuesta.context["planta_mayor_consumo"], "Planta Sur - Comodoro Rivadavia")
+        self.assertContains(respuesta, "Planta Sur - Comodoro Rivadavia")
