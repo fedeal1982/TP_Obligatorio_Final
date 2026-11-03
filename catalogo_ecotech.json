@@ -1,0 +1,32 @@
+[
+    {
+        "tipo_producto": "DispositivoEcologico",
+        "id_producto": "INV-HYB-5000",
+        "nombre": "Inversor Híbrido SmartEco 5kW",
+        "categoria": "Electrónica de Potencia",
+        "precio": 1450.0,
+        "stock": 12
+    },
+    {
+        "tipo_producto": "PanelSolar",
+        "id_producto": "SOL-MONO-450",
+        "nombre": "Panel Solar EcoPro Monocristalino 450W",
+        "categoria": "Energía Solar Fotovoltaica",
+        "precio": 189.9,
+        "stock": 45,
+        "potencia_w": 450.0,
+        "tipo_celda": "Monocristalino PERC",
+        "eficiencia_porcentaje": 21.4
+    },
+    {
+        "tipo_producto": "PanelSolar",
+        "id_producto": "SOL-BIFAC-550",
+        "nombre": "Panel Solar Bifacial Hi-Power 550W",
+        "categoria": "Energía Solar Fotovoltaica",
+        "precio": 235.5,
+        "stock": 30,
+        "potencia_w": 550.0,
+        "tipo_celda": "N-Type TopCon Bifacial",
+        "eficiencia_porcentaje": 22.8
+    }
+]
